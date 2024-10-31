@@ -4,10 +4,10 @@ from PIL import Image
 import argparse
 from tqdm import tqdm
 import sys
+import time
 
 def get_poppler_path():
     """Obtiene la ruta de Poppler basada en el sistema"""
-    # Ajusta esta ruta según donde hayas instalado Poppler
     default_paths = [
         r"C:\Program Files\poppler-23.11.0\Library\bin",
         r"C:\Program Files\poppler\bin",
@@ -15,12 +15,10 @@ def get_poppler_path():
         r"C:\poppler\Library\bin"
     ]
     
-    # Buscar en las rutas predeterminadas
     for path in default_paths:
         if os.path.exists(path):
             return path
             
-    # Si no se encuentra, pedir al usuario
     print("No se encontró Poppler en las rutas predeterminadas.")
     print("Por favor, introduce la ruta completa a la carpeta bin de Poppler:")
     user_path = input().strip()
@@ -45,35 +43,44 @@ def convert_pdf_to_jpeg(pdf_path, output_dir, dpi=300, quality=95):
         # Obtener el nombre base del archivo
         pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
         
-        print(f"Convirtiendo {pdf_path}...")
-        print("Este proceso puede tardar varios minutos dependiendo del tamaño del PDF...")
+        # Obtener tamaño del archivo
+        file_size_mb = os.path.getsize(pdf_path) / (1024 * 1024)
+        
+        print(f"\nIniciando conversión de: {pdf_path}")
+        print(f"Tamaño del archivo: {file_size_mb:.2f} MB")
+        print(f"Resolución solicitada: {dpi} DPI")
+        print(f"Calidad JPEG: {quality}")
+        print("\nEste proceso puede tardar varios minutos dependiendo del tamaño del PDF...")
         
         # Obtener la ruta de Poppler
         poppler_path = get_poppler_path()
         print(f"Usando Poppler desde: {poppler_path}")
         
-        # Convertir PDF a imágenes con timeout más largo
+        # Mostrar animación de carga mientras convierte
+        print("\nConvirtiendo PDF a imágenes", end="")
+        start_time = time.time()
+        
+        # Convertir PDF a imágenes
         images = convert_from_path(
             pdf_path,
             dpi=dpi,
             poppler_path=poppler_path,
-            timeout=120,  # Aumentar timeout a 120 segundos
-            fmt='jpeg',   # Especificar formato
-            thread_count=4  # Usar múltiples hilos
+            timeout=300,  # 5 minutos de timeout
+            fmt='jpeg',
+            thread_count=4
         )
         
-        print(f"PDF convertido. Procesando {len(images)} páginas...")
+        conversion_time = time.time() - start_time
+        print(f"\n\nConversión completada en {conversion_time:.1f} segundos")
+        print(f"Procesando {len(images)} páginas...")
         
         # Guardar cada página como JPEG
-        for i, image in enumerate(tqdm(images, desc="Guardando imágenes")):
-            # Convertir a modo RGB si es necesario
+        for i, image in enumerate(tqdm(images, desc="Guardando imágenes", unit="página")):
             if image.mode != 'RGB':
                 image = image.convert('RGB')
             
-            # Nombre del archivo de salida
             output_file = os.path.join(output_dir, f"{pdf_name}_pagina_{i+1}.jpg")
             
-            # Guardar la imagen con alta calidad
             image.save(
                 output_file,
                 'JPEG',
@@ -82,7 +89,11 @@ def convert_pdf_to_jpeg(pdf_path, output_dir, dpi=300, quality=95):
                 progressive=True
             )
         
+        end_time = time.time()
+        total_time = end_time - start_time
+        
         print(f"\n¡Conversión completada!")
+        print(f"Tiempo total: {total_time:.1f} segundos")
         print(f"Se han guardado {len(images)} páginas en: {os.path.abspath(output_dir)}")
         
     except KeyboardInterrupt:

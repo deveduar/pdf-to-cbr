@@ -1,3 +1,15 @@
-La auditora -- Jon Bilbao, Javier Peinado.pdf
+# PDF to JPEG
 
-py main.py D:/Manga/LaauditoraJonBilbaoJavierPeinado.pdf --output-dir imagenes --dpi 600 --quality 95
+## info
+
+Use example:
+py main.py D:/Manga/archivo.pdf --output-dir imagenes --dpi 300 --quality 95
+
+
+## todo
+
+- [ ] convert to zip and cbr
+- [ ] fix 600 dpi quality 
+- [ ] formated output
+- [ ] files with especial characters
+- [ ] User friendly, ui
