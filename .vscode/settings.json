@@ -1,0 +1,18 @@
+// Configuración para el workspace (.vscode/settings.json)
+{
+    // Ruta al intérprete de Python (ajusta la ruta según tu estructura)
+    "python.defaultInterpreterPath": "${workspaceFolder}/env/Scripts/python.exe",
+    
+    // Configuración de Pylance
+    "python.analysis.extraPaths": ["${workspaceFolder}/env/Lib/site-packages"],
+    
+    // Activar el entorno virtual automáticamente
+    "python.terminal.activateEnvironment": true,
+    
+    // Configuración del linter
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    
+    // Formateo de código
+    "python.formatting.provider": "autopep8"
+}
