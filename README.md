@@ -56,10 +56,8 @@ python main.py "D:/Manga/chapter2.pdf" --output-dir my_images --dpi 600 --qualit
 
 ## Roadmap
 - [x] Convert to ZIP and CBR
-- [ ] Fix 600 DPI quality issues
-- [ ] User-friendly web interface
 - [ ] Loading improvements and color enhancements
-- [ ] Support for filenames and paths with special characters
+
 
 ## Troubleshooting
 - Ensure Poppler is correctly installed and added to system PATH

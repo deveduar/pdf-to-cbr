@@ -1,59 +1,65 @@
 import unittest
-from unittest.mock import patch, MagicMock
 import os
-import shutil
-from main import get_poppler_path, convert_pdf_to_jpeg
+from unittest.mock import patch, MagicMock
+from main import handle_error, get_poppler_path, check_overwrite, prepare_directories, convert_pdf_to_images
 
-class TestPDFConversion(unittest.TestCase):
+class TestPDFConversionFunctions(unittest.TestCase):
 
-    @patch("os.path.exists")
+    def test_handle_error_with_exception(self):
+        with patch('builtins.print') as mock_print:
+            handle_error("Test error", Exception("Exception message"))
+            mock_print.assert_called_with("\nTest error: Exception message")
+    
+    def test_handle_error_without_exception(self):
+        with patch('builtins.print') as mock_print:
+            handle_error("Test error")
+            mock_print.assert_called_with("\nTest error")
+
+    @patch("os.path.exists", return_value=True)
     def test_get_poppler_path_exists(self, mock_exists):
-        mock_exists.return_value = True
-        expected_path = os.path.join(os.path.dirname(__file__), "poppler", "Library/bin")
         path = get_poppler_path()
+        expected_path = os.path.join(os.path.dirname(__file__), "poppler", "Library/bin")
         self.assertEqual(path, expected_path)
+        mock_exists.assert_called_once()  # Asegurarse de que se llame a exists
 
-    @patch("os.path.exists", side_effect=lambda path: path != "nonexistent.pdf")
-    def test_convert_pdf_to_jpeg_file_not_found(self, mock_exists):
+    @patch("os.path.exists", return_value=False)
+    def test_get_poppler_path_not_exists(self, mock_exists):
         with self.assertRaises(FileNotFoundError):
-            convert_pdf_to_jpeg("nonexistent.pdf", "output")
+            get_poppler_path()
+        mock_exists.assert_called_once()  # Asegurarse de que se llame a exists
+
+    @patch("os.path.exists", return_value=True)
+    @patch("builtins.input", return_value="s")
+    def test_check_overwrite_yes(self, mock_input, mock_exists):
+        self.assertTrue(check_overwrite("output/test.cbr"))
+        mock_exists.assert_called_once()  # Asegurarse de que se llame a exists
+        mock_input.assert_called_once()  # Asegurarse de que se llame a input
+
+    @patch("os.path.exists", return_value=True)
+    @patch("builtins.input", return_value="n")
+    def test_check_overwrite_no(self, mock_input, mock_exists):
+        self.assertFalse(check_overwrite("output/test.cbr"))
+        mock_exists.assert_called_once()  # Asegurarse de que se llame a exists
+        mock_input.assert_called_once()  # Asegurarse de que se llame a input
 
     @patch("os.makedirs")
-    @patch("os.path.exists", side_effect=lambda path: path == "output/test.cbr")
-    @patch("os.remove")
+    def test_prepare_directories(self, mock_makedirs):
+        prepare_directories("output", "temp_dir")
+        mock_makedirs.assert_any_call("output", exist_ok=True)
+        mock_makedirs.assert_any_call("temp_dir", exist_ok=True)
+
+    @patch("main.get_poppler_path", return_value="poppler_path")
     @patch("pdf2image.convert_from_path")
-    @patch("os.listdir", return_value=["image1.jpg", "image2.jpg"])
-    @patch("zipfile.ZipFile")
-    @patch("shutil.rmtree")
-    def test_convert_pdf_to_jpeg_overwrite(self, mock_rmtree, mock_zipfile, mock_listdir, mock_convert, mock_remove, mock_exists, mock_makedirs):
-        mock_convert.return_value = [MagicMock(), MagicMock()]  # Simula que se generaron 2 imágenes
-        pdf_path = "test.pdf"
-        output_dir = "output"
+    def test_convert_pdf_to_images(self, mock_convert, mock_get_poppler):
+        # Simulamos la creación de imágenes
+        mock_image_1 = MagicMock()
+        mock_image_2 = MagicMock()
+        mock_convert.return_value = [mock_image_1, mock_image_2]
 
-        # Patching `input` para forzar la respuesta sin interacción
-        with patch('builtins.input', return_value='s'):
-            convert_pdf_to_jpeg(pdf_path, output_dir)
+        images = convert_pdf_to_images("test.pdf", 300)
+        
+        mock_convert.assert_called_once_with("test.pdf", dpi=300, poppler_path="poppler_path", fmt='jpeg')
+        self.assertEqual(len(images), 2)  # Simula que generó 2 imágenes
 
-        # Verifica que se llamó a os.remove para eliminar el CBR existente
-        mock_remove.assert_called_once_with("output/test.cbr")
-        # Verifica que se crea el ZIP
-        mock_zipfile.assert_called_once()
-
-    @patch("os.makedirs")
-    @patch("pdf2image.convert_from_path")
-    @patch("zipfile.ZipFile")
-    @patch("os.listdir", return_value=["image1.jpg", "image2.jpg"])
-    def test_convert_pdf_to_jpeg_success(self, mock_listdir, mock_zipfile, mock_convert, mock_makedirs):
-        mock_convert.return_value = [MagicMock(), MagicMock()]  # Simula que se generaron 2 imágenes
-        pdf_path = "test.pdf"
-        output_dir = "output"
-
-        convert_pdf_to_jpeg(pdf_path, output_dir)
-
-        # Verifica que se llamó a convert_from_path con los argumentos correctos
-        mock_convert.assert_called_once_with(pdf_path, dpi=300, poppler_path=get_poppler_path(), fmt='jpeg')
-        # Verifica que se crea el ZIP
-        mock_zipfile.assert_called_once()
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
