@@ -13,7 +13,7 @@ with options:
 
 Requirements:
 - python 3^
-- [poppler for windows](https://github.com/oschwartz10612/poppler-windows?tab=readme-ov-file) (extract in the same folder.)
+- [poppler for windows](https://github.com/oschwartz10612/poppler-windows?tab=readme-ov-file) (extract in the same folder)
 
 
 ## todo
