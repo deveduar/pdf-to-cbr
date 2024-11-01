@@ -7,26 +7,14 @@ import sys
 import time
 
 def get_poppler_path():
-    """Obtiene la ruta de Poppler basada en el sistema"""
-    default_paths = [
-        r"C:\Program Files\poppler-23.11.0\Library\bin",
-        r"C:\Program Files\poppler\bin",
-        r"C:\Poppler\bin",
-        r"C:\poppler\Library\bin"
-    ]
+    """Obtiene la ruta de Poppler dentro del directorio del proyecto"""
+    project_poppler_path = os.path.join(os.path.dirname(__file__), "poppler", "Library/bin")
     
-    for path in default_paths:
-        if os.path.exists(path):
-            return path
-            
-    print("No se encontró Poppler en las rutas predeterminadas.")
-    print("Por favor, introduce la ruta completa a la carpeta bin de Poppler:")
-    user_path = input().strip()
-    
-    if os.path.exists(user_path):
-        return user_path
+    if os.path.exists(project_poppler_path):
+        return project_poppler_path
     else:
-        raise FileNotFoundError("No se pudo encontrar Poppler. Por favor, verifica la instalación.")
+        raise FileNotFoundError("No se pudo encontrar Poppler en el directorio del proyecto.")
+
 
 def convert_pdf_to_jpeg(pdf_path, output_dir, dpi=300, quality=95):
     """
@@ -98,14 +86,14 @@ def convert_pdf_to_jpeg(pdf_path, output_dir, dpi=300, quality=95):
         
     except KeyboardInterrupt:
         print("\nProceso interrumpido por el usuario.")
-        sys.exit(1)
+        raise  # Arrojar excepción en vez de sys.exit(1)
     except Exception as e:
         print(f"\nError durante la conversión: {str(e)}")
         print("Asegúrate de que:")
         print("1. Poppler está instalado correctamente")
         print("2. La ruta de Poppler está en las variables de entorno o especificada correctamente")
         print("3. El archivo PDF no está corrupto o protegido")
-        sys.exit(1)
+        raise  # Arrojar excepción en vez de sys.exit(1)
 
 def main():
     parser = argparse.ArgumentParser(description='Convertir PDF a JPEG de alta calidad')
