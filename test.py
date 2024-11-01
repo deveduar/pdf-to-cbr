@@ -8,7 +8,7 @@ class TestPDFConversion(unittest.TestCase):
     @patch("os.path.exists", return_value=True)
     def test_get_poppler_path_relative(self, mock_exists):
         # Probamos que la ruta relativa de Poppler se obtiene correctamente
-        expected_path = os.path.join(os.path.dirname(__file__), "poppler", "bin")
+        expected_path = os.path.join(os.path.dirname(__file__), "poppler", "Library/bin")
         path = get_poppler_path()
         self.assertEqual(path, expected_path)
 
