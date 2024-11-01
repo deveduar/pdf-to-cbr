@@ -1,19 +1,19 @@
-# PDF to JPEG
-Simple script made with python and poppler for convert pdf to jpg 🚧
+# PDF to CBR
+Simple script made with python for convert pdf to cbr 🚧
 
-)
 
 ## info
 
 Use example:
+``py main.py D:/Manga/filename.pdf``
 
+with options:
 ``py main.py "D:/Manga/filename.pdf" --output-dir images --dpi 300 --quality 95``
 
-``py main.py D:/Manga/filename.pdf``
 
 Requeriments:
 - python 3^
-- [poppler for windows](https://github.com/oschwartz10612/poppler-windows?tab=readme-ov-file
+- [poppler for windows](https://github.com/oschwartz10612/poppler-windows?tab=readme-ov-file)
 
 
 ## todo
