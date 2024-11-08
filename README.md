@@ -3,6 +3,10 @@
 ## Description
 A Python script to convert PDF files to CBR (Comic Book RAR) format, perfect for digital comic and manga readers.
 
+## Disclaimer
+
+This tool is intended for personal and educational use only. Please ensure you have the right to convert and distribute any content with copyright protection. The creator of this script does not condone or take responsibility for any unauthorized use, including the redistribution of copyrighted material.
+
 ## Prerequisites
 - Python 3.7+ 
 - [Poppler for Windows](https://github.com/oschwartz10612/poppler-windows?tab=readme-ov-file)
