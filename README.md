@@ -1,5 +1,4 @@
 ---
-id: 5
 title: "PDF to CBR Converter"
 description: "A Python script to convert PDF files to CBR (Comic Book RAR) format, perfect for digital comic and manga readers."
 imageSrc: "https://i.postimg.cc/HLT5MH2H/artem-sapegin-b18-TRXc8-UPQ-unsplash.jpg"
