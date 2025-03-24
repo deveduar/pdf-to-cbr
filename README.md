@@ -11,8 +11,6 @@ technologies:
 links:
   - href: "https://github.com/deveduar/pdf-to-cbr.git"
     label: "GitHub Repository"
-gallery:
-  - "https://i.postimg.cc/HLT5MH2H/artem-sapegin-b18-TRXc8-UPQ-unsplash.jpg"
 features:
   - "Converts PDFs to CBR format for digital comic reading."
   - "Supports custom output directories, DPI, and image quality settings."
